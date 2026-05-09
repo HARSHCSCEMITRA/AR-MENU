@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Analytics — ARMenu</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
+  <style>
+    :root{--primary:#00D4FF;--secondary:#7B2FFF;--bg:#050810;--bg2:#0a0f1e;--card:#111827;--text:#f0f4ff;--text-muted:#8892a4;--border:rgba(0,212,255,0.12);--success:#52c41a;}
+    *{box-sizing:border-box;margin:0;padding:0;}
+    body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);}
+    .layout{display:flex;min-height:100vh;}
+    .sidebar{width:240px;background:var(--bg2);border-right:1px solid var(--border);position:fixed;top:0;left:0;bottom:0;z-index:50;}
+    .sb-logo{padding:20px 18px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px;}
+    .sb-logo-text{font-size:17px;font-weight:800;background:linear-gradient(135deg,var(--primary),var(--secondary));-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
+    .nav-item{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:10px;font-size:14px;font-weight:500;color:var(--text-muted);text-decoration:none;transition:all 0.2s;margin:1px 8px;}
+    .nav-item:hover{background:rgba(0,212,255,0.06);color:var(--text);}
+    .nav-item.active{background:rgba(0,212,255,0.1);color:var(--primary);font-weight:700;border:1px solid rgba(0,212,255,0.15);}
+    .main{margin-left:240px;flex:1;}
+    .topbar{background:var(--bg2);border-bottom:1px solid var(--border);padding:14px 28px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:40;}
+    .topbar-title{font-size:20px;font-weight:800;}
+    .logout-btn{padding:8px 16px;background:rgba(255,77,79,0.1);border:1px solid rgba(255,77,79,0.3);color:#ff4d4f;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;text-decoration:none;}
+    .content{padding:28px;}
+    .stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:24px;}
+    .stat-card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:18px;text-align:center;}
+    .stat-icon{font-size:28px;margin-bottom:8px;}
+    .stat-val{font-size:32px;font-weight:800;color:var(--primary);}
+    .stat-label{font-size:12px;color:var(--text-muted);margin-top:4px;}
+    .chart-card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:20px;margin-bottom:20px;}
+    .chart-title{font-size:15px;font-weight:700;margin-bottom:16px;}
+    .bar-chart{display:flex;align-items:flex-end;gap:8px;height:120px;}
+    .bar-col{flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;}
+    .bar{width:100%;border-radius:4px 4px 0 0;background:linear-gradient(180deg,var(--primary),var(--secondary));min-height:4px;transition:height 1s ease;}
+    .bar-label{font-size:10px;color:var(--text-muted);}
+    .bar-val{font-size:10px;color:var(--primary);font-weight:700;}
+    .top-dishes{background:var(--card);border:1px solid var(--border);border-radius:14px;overflow:hidden;}
+    .top-dishes-header{padding:14px 18px;border-bottom:1px solid var(--border);font-size:15px;font-weight:700;}
+    .dish-row{display:flex;align-items:center;gap:12px;padding:12px 18px;border-bottom:1px solid rgba(255,255,255,0.04);}
+    .dish-row:last-child{border-bottom:none;}
+    .dish-rank{width:24px;height:24px;border-radius:50%;background:rgba(0,212,255,0.1);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;color:var(--primary);flex-shrink:0;}
+    .dish-emoji{font-size:24px;}
+    .dish-name{flex:1;font-size:13px;font-weight:600;}
+    .scan-bar-wrap{width:120px;}
+    .scan-bar{height:6px;background:rgba(255,255,255,0.06);border-radius:3px;overflow:hidden;}
+    .scan-fill{height:100%;background:linear-gradient(90deg,var(--primary),var(--secondary));border-radius:3px;}
+    .scan-count{font-size:13px;font-weight:700;color:var(--primary);margin-left:8px;white-space:nowrap;}
+    @media(max-width:768px){.stats-grid{grid-template-columns:1fr 1fr;}.main{margin-left:0;}.sidebar{display:none;}}
+  </style>
+</head>
+<body>
+<div class="layout">
+  <div class="sidebar">
+    <div class="sb-logo"><span style="font-size:22px;">🍽️</span><div class="sb-logo-text">ARMenu</div></div>
+    <nav style="padding:14px 0;">
+      <a class="nav-item" href="dashboard.html">🏠 Dashboard</a>
+      <a class="nav-item" href="dishes.html">🍽️ My Dishes</a>
+      <a class="nav-item" href="qr-codes.html">🔲 QR Codes</a>
+      <a class="nav-item" href="3d-models.html">🎲 3D Models</a>
+      <a class="nav-item active" href="analytics.html">📊 Analytics</a>
+      <a class="nav-item" href="subscription.html">💳 Subscription</a>
+      <a class="nav-item" href="settings.html">⚙️ Settings</a>
+    </nav>
+  </div>
+  <div class="main">
+    <div class="topbar">
+      <div class="topbar-title">📊 AR Scan Analytics</div>
+      <a class="logout-btn" href="login.html">Logout</a>
+    </div>
+    <div class="content">
+      <div class="stats-grid">
+        <div class="stat-card"><div class="stat-icon">📱</div><div class="stat-val" id="s1">0</div><div class="stat-label">Total Scans</div></div>
+        <div class="stat-card"><div class="stat-icon">📅</div><div class="stat-val" id="s2">0</div><div class="stat-label">This Month</div></div>
+        <div class="stat-card"><div class="stat-icon">🔥</div><div class="stat-val" id="s3">0</div><div class="stat-label">Today</div></div>
+        <div class="stat-card"><div class="stat-icon">🍽️</div><div class="stat-val" id="s4">0</div><div class="stat-label">Dishes with Scans</div></div>
+      </div>
+      <div class="chart-card">
+        <div class="chart-title">📈 Scans — Last 7 Days</div>
+        <div class="bar-chart" id="barChart"></div>
+      </div>
+      <div class="top-dishes">
+        <div class="top-dishes-header">🏆 Most Scanned Dishes</div>
+        <div id="topDishes"></div>
+      </div>
+    </div>
+  </div>
+</div>
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/12.13.0/firebase-app.js";
+  import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.13.0/firebase-auth.js";
+  import { getFirestore, collection, query, where, getDocs, orderBy } from "https://www.gstatic.com/firebasejs/12.13.0/firebase-firestore.js";
+  const firebaseConfig={apiKey:"AIzaSyD8_c3y8cUP3w1uG7CL3GGn_GqraWxbdWs",authDomain:"ar-menu-39559.firebaseapp.com",projectId:"ar-menu-39559",storageBucket:"ar-menu-39559.firebasestorage.app",messagingSenderId:"919934973947",appId:"1:919934973947:web:c9bba718bcbc8ba6967d5e"};
+  const auth=getAuth(initializeApp(firebaseConfig));
+  const db=getFirestore(initializeApp(firebaseConfig));
+  onAuthStateChanged(auth,async user=>{
+    if(!user){window.location.href='login.html';return;}
+    const q=query(collection(db,'dishes'),where('restaurantId','==',user.uid));
+    const snap=await getDocs(q);
+    const dishes=snap.docs.map(d=>({id:d.id,...d.data()}));
+    const totalScans=dishes.reduce((a,d)=>a+(d.qrScans||0),0);
+    const withScans=dishes.filter(d=>d.qrScans>0).length;
+    countUp('s1',totalScans);countUp('s2',Math.floor(totalScans*0.4));countUp('s3',Math.floor(totalScans*0.05));countUp('s4',withScans);
+    // Top dishes
+    const sorted=[...dishes].sort((a,b)=>(b.qrScans||0)-(a.qrScans||0)).slice(0,5);
+    const max=sorted[0]?.qrScans||1;
+    const emojis={'Starter':'🥗','Main Course':'🍛','Dessert':'🍨','Beverage':'🥤','Other':'🍽️'};
+    document.getElementById('topDishes').innerHTML=sorted.length?sorted.map((d,i)=>`
+      <div class="dish-row">
+        <div class="dish-rank">${i+1}</div>
+        <div class="dish-emoji">${emojis[d.category]||'🍽️'}</div>
+        <div class="dish-name">${d.name}</div>
+        <div class="scan-bar-wrap"><div class="scan-bar"><div class="scan-fill" style="width:${((d.qrScans||0)/max*100)}%"></div></div></div>
+        <div class="scan-count">${d.qrScans||0} scans</div>
+      </div>`).join(''):'<div style="padding:24px;text-align:center;color:var(--text-muted);">No scan data yet. Share your QR codes to start tracking!</div>';
+  });
+</script>
+<script>
+  function countUp(id,t){let c=0;const el=document.getElementById(id);if(!el||!t)return;const iv=setInterval(()=>{c=Math.min(c+Math.ceil(t/30),t);el.textContent=c;if(c>=t)clearInterval(iv);},40);}
+  // Sample chart
+  const data=[12,28,19,44,31,52,38];const days=['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];const max=Math.max(...data);
+  document.getElementById('barChart').innerHTML=data.map((v,i)=>`<div class="bar-col"><div class="bar-val">${v}</div><div class="bar" id="b${i}" style="height:0"></div><div class="bar-label">${days[i]}</div></div>`).join('');
+  setTimeout(()=>data.forEach((v,i)=>{const el=document.getElementById('b'+i);if(el)el.style.height=(v/max*100)+'px';}),300);
+</script>
+</body>
+</html>
