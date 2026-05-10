@@ -103,16 +103,16 @@
     <nav class="sb-nav">
       <div class="nav-group">
         <div class="nav-group-label">Main</div>
-        <a class="nav-item active" href="dashboard.html"><span class="nav-icon">🏠</span>Dashboard</a>
-        <a class="nav-item" href="dishes.html"><span class="nav-icon">🍽️</span>My Dishes</a>
-        <a class="nav-item" href="qr-codes.html"><span class="nav-icon">🔲</span>QR Codes</a>
-        <a class="nav-item" href="3d-models.html"><span class="nav-icon">🎲</span>3D Models</a>
+        <a class="nav-item active" href="dashboard"><span class="nav-icon">🏠</span>Dashboard</a>
+        <a class="nav-item" href="dishes"><span class="nav-icon">🍽️</span>My Dishes</a>
+        <a class="nav-item" href="qr-codes"><span class="nav-icon">🔲</span>QR Codes</a>
+        <a class="nav-item" href="3d-models"><span class="nav-icon">🎲</span>3D Models</a>
       </div>
       <div class="nav-group">
         <div class="nav-group-label">Account</div>
-        <a class="nav-item" href="analytics.html"><span class="nav-icon">📊</span>Analytics</a>
-        <a class="nav-item" href="subscription.html"><span class="nav-icon">💳</span>Subscription</a>
-        <a class="nav-item" href="settings.html"><span class="nav-icon">⚙️</span>Settings</a>
+        <a class="nav-item" href="analytics"><span class="nav-icon">📊</span>Analytics</a>
+        <a class="nav-item" href="subscription"><span class="nav-icon">💳</span>Subscription</a>
+        <a class="nav-item" href="settings"><span class="nav-icon">⚙️</span>Settings</a>
       </div>
     </nav>
     <div class="sb-footer">
@@ -130,14 +130,14 @@
       <div class="topbar-right">
         <div class="notif-btn">🔔<span class="notif-dot"></span></div>
         <span style="font-size:13px;color:var(--text-muted);" id="topRestName">-</span>
-        <a class="logout-btn" href="login.html" id="logoutBtn">Logout</a>
+        <a class="logout-btn" href="login" id="logoutBtn">Logout</a>
       </div>
     </div>
     <div class="content">
       <!-- TRIAL BANNER -->
       <div class="trial-banner">
         <div class="trial-text"><div class="days"><span id="trialDays">14</span> days</div><div class="label">remaining in your free trial</div></div>
-        <button class="btn-upgrade" onclick="window.location.href='subscription.html'">⚡ Upgrade Now</button>
+        <button class="btn-upgrade" onclick="window.location.href='subscription'">⚡ Upgrade Now</button>
       </div>
       <!-- STATS -->
       <div class="stats-grid">
@@ -148,15 +148,15 @@
       </div>
       <!-- QUICK ACTIONS -->
       <div class="quick-grid">
-        <a class="quick-btn" href="dishes.html?action=add"><div class="quick-icon">➕</div><div class="quick-label">Add New Dish</div></a>
-        <a class="quick-btn" href="3d-models.html"><div class="quick-icon">🤖</div><div class="quick-label">Generate 3D Model</div></a>
-        <a class="quick-btn" href="qr-codes.html"><div class="quick-icon">🔲</div><div class="quick-label">Generate QR Code</div></a>
-        <a class="quick-btn" href="analytics.html"><div class="quick-icon">📊</div><div class="quick-label">View Analytics</div></a>
+        <a class="quick-btn" href="dishes?action=add"><div class="quick-icon">➕</div><div class="quick-label">Add New Dish</div></a>
+        <a class="quick-btn" href="3d-models"><div class="quick-icon">🤖</div><div class="quick-label">Generate 3D Model</div></a>
+        <a class="quick-btn" href="qr-codes"><div class="quick-icon">🔲</div><div class="quick-label">Generate QR Code</div></a>
+        <a class="quick-btn" href="analytics"><div class="quick-icon">📊</div><div class="quick-label">View Analytics</div></a>
       </div>
       <!-- DISHES + ACTIVITY -->
       <div class="row-2">
         <div class="card">
-          <div class="card-header"><div class="card-title">Recent Dishes</div><a class="card-action" href="dishes.html">View All →</a></div>
+          <div class="card-header"><div class="card-title">Recent Dishes</div><a class="card-action" href="dishes">View All →</a></div>
           <div class="dish-list" id="dishList">
             <div style="padding:24px;text-align:center;color:var(--text-muted);font-size:14px;">⏳ Loading dishes...</div>
           </div>
@@ -199,7 +199,7 @@
   const db = getFirestore(app);
 
   onAuthStateChanged(auth, async (user) => {
-    if (!user) { window.location.href = 'login.html'; return; }
+    if (!user) { window.location.href = 'login'; return; }
 
     // Load restaurant data
     const restDoc = await getDoc(doc(db, 'restaurants', user.uid));
@@ -221,7 +221,7 @@
       const snap = await getDocs(dishQ);
       const emojis = {'Starter':'🥗','Main Course':'🍛','Dessert':'🍨','Beverage':'🥤','Other':'🍽️'};
       if (snap.empty) {
-        document.getElementById('dishList').innerHTML = '<div style="padding:24px;text-align:center;color:var(--text-muted);font-size:14px;">No dishes yet. <a href="dishes.html?action=add" style="color:var(--primary);">Add your first dish →</a></div>';
+        document.getElementById('dishList').innerHTML = '<div style="padding:24px;text-align:center;color:var(--text-muted);font-size:14px;">No dishes yet. <a href="dishes?action=add" style="color:var(--primary);">Add your first dish →</a></div>';
       } else {
         document.getElementById('dishList').innerHTML = snap.docs.map(d => {
           const dish = d.data();
@@ -247,7 +247,7 @@
   document.getElementById('logoutBtn').onclick = async (e) => {
     e.preventDefault();
     await signOut(auth);
-    window.location.href = 'login.html';
+    window.location.href = 'login';
   };
 </script>
 <script>

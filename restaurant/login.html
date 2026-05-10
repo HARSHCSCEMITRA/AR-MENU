@@ -96,7 +96,7 @@
     </div>
     <button class="btn-submit" id="loginBtn" onclick="doLogin()">Login to Dashboard →</button>
 
-    <div class="signup-link">Don't have an account? <a href="signup.html">Sign up free</a></div>
+    <div class="signup-link">Don't have an account? <a href="signup">Sign up free</a></div>
     <div class="back-link"><a href="../public/index.html">← Back to homepage</a></div>
   </div>
 
@@ -156,7 +156,7 @@
           });
         }
         showAlert('success', '✅ Google login successful! Redirecting...');
-        setTimeout(() => window.location.href = 'dashboard.html', 1000);
+        setTimeout(() => window.location.href = 'dashboard', 1000);
       } catch (err) {
         const msgs = {
           'auth/popup-closed-by-user': '⚠️ Popup closed. Please try again.',
@@ -182,7 +182,7 @@
       try {
         await signInWithEmailAndPassword(auth, email, password);
         showAlert('success','✅ Login successful! Redirecting...');
-        setTimeout(() => window.location.href = 'dashboard.html', 1000);
+        setTimeout(() => window.location.href = 'dashboard', 1000);
       } catch (err) {
         const msgs = {
           'auth/user-not-found': '❌ No account with this email.',

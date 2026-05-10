@@ -130,7 +130,7 @@
         🚀 Create Account & Start Free Trial
       </button>
     </form>
-    <div class="login-link">Already have an account? <a href="login.html">Login here</a></div>
+    <div class="login-link">Already have an account? <a href="login">Login here</a></div>
   </div>
 
   <script type="module">
@@ -177,7 +177,7 @@
           });
         }
         showAlert('success', '🎉 Google signup successful! Redirecting...');
-        setTimeout(() => window.location.href = 'dashboard.html', 1200);
+        setTimeout(() => window.location.href = 'dashboard', 1200);
       } catch (err) {
         const msgs = {
           'auth/popup-closed-by-user': '⚠️ Popup closed. Please try again.',
@@ -228,7 +228,7 @@
         });
 
         showAlert('success', '🎉 Account created! Redirecting to dashboard...');
-        setTimeout(() => window.location.href = 'dashboard.html', 1500);
+        setTimeout(() => window.location.href = 'dashboard', 1500);
 
       } catch (err) {
         const messages = {

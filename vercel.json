@@ -1,4 +1,6 @@
 {
+  "cleanUrls": true,
+  "trailingSlash": false,
   "headers": [
     {
       "source": "/(.*)",
@@ -9,30 +11,6 @@
     }
   ],
   "rewrites": [
-    { "source": "/", "destination": "/public/index.html" },
-    { "source": "/restaurant/login", "destination": "/restaurant/login.html" },
-    { "source": "/restaurant/login.html", "destination": "/restaurant/login.html" },
-    { "source": "/restaurant/signup", "destination": "/restaurant/signup.html" },
-    { "source": "/restaurant/signup.html", "destination": "/restaurant/signup.html" },
-    { "source": "/restaurant/dashboard", "destination": "/restaurant/dashboard.html" },
-    { "source": "/restaurant/dashboard.html", "destination": "/restaurant/dashboard.html" },
-    { "source": "/restaurant/dishes", "destination": "/restaurant/dishes.html" },
-    { "source": "/restaurant/dishes.html", "destination": "/restaurant/dishes.html" },
-    { "source": "/restaurant/qr-codes", "destination": "/restaurant/qr-codes.html" },
-    { "source": "/restaurant/qr-codes.html", "destination": "/restaurant/qr-codes.html" },
-    { "source": "/restaurant/3d-models", "destination": "/restaurant/3d-models.html" },
-    { "source": "/restaurant/3d-models.html", "destination": "/restaurant/3d-models.html" },
-    { "source": "/restaurant/analytics", "destination": "/restaurant/analytics.html" },
-    { "source": "/restaurant/analytics.html", "destination": "/restaurant/analytics.html" },
-    { "source": "/restaurant/subscription", "destination": "/restaurant/subscription.html" },
-    { "source": "/restaurant/subscription.html", "destination": "/restaurant/subscription.html" },
-    { "source": "/restaurant/settings", "destination": "/restaurant/settings.html" },
-    { "source": "/restaurant/settings.html", "destination": "/restaurant/settings.html" },
-    { "source": "/restaurant/forgot", "destination": "/restaurant/forgot.html" },
-    { "source": "/restaurant/forgot.html", "destination": "/restaurant/forgot.html" },
-    { "source": "/ar", "destination": "/ar/index.html" },
-    { "source": "/ar/demo", "destination": "/ar/demo.html" },
-    { "source": "/ar/demo.html", "destination": "/ar/demo.html" },
-    { "source": "/admin", "destination": "/admin/index.html" }
+    { "source": "/", "destination": "/public/index.html" }
   ]
 }
