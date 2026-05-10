@@ -181,13 +181,13 @@
 
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/12.13.0/firebase-app.js";
-  import { getAuth, onAuthStateChanged, signOut, setPersistence, browserLocalPersistence } from "https://www.gstatic.com/firebasejs/12.13.0/firebase-auth.js";
+  import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/12.13.0/firebase-auth.js";
   import { getFirestore, doc, getDoc, collection, query, where, getDocs, orderBy, limit } from "https://www.gstatic.com/firebasejs/12.13.0/firebase-firestore.js";
 
   // ── REPLACE WITH YOUR FIREBASE CONFIG ──
   const firebaseConfig = {
     apiKey: "AIzaSyD8_c3y8cUP3w1uG7CL3GGn_GqraWxbdWs",
-    authDomain: "aaremenu.vercel.app",
+    authDomain: "ar-menu-39559.firebaseapp.com",
     projectId: "ar-menu-39559",
     storageBucket: "ar-menu-39559.firebasestorage.app",
     messagingSenderId: "919934973947",
@@ -196,7 +196,6 @@
 
   const app = initializeApp(firebaseConfig);
   const auth = getAuth(app);
-  await setPersistence(auth, browserLocalPersistence);
   const db = getFirestore(app);
 
   onAuthStateChanged(auth, async (user) => {
