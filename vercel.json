@@ -1,18 +1,23 @@
 {
+  "cleanUrls": true,
+  "trailingSlash": false,
   "rewrites": [
-    { "source": "/login", "destination": "/restaurant/login.html" },
-    { "source": "/signup", "destination": "/restaurant/signup.html" },
-    { "source": "/dashboard", "destination": "/restaurant/dashboard.html" },
-    { "source": "/dishes", "destination": "/restaurant/dishes.html" },
-    { "source": "/qr-codes", "destination": "/restaurant/qr-codes.html" },
-    { "source": "/3d-models", "destination": "/restaurant/3d-models.html" },
-    { "source": "/analytics", "destination": "/restaurant/analytics.html" },
-    { "source": "/subscription", "destination": "/restaurant/subscription.html" },
-    { "source": "/settings", "destination": "/restaurant/settings.html" },
-    { "source": "/forgot", "destination": "/restaurant/forgot.html" },
-    { "source": "/ar-view", "destination": "/ar/index.html" },
-    { "source": "/ar-demo", "destination": "/ar/demo.html" },
-    { "source": "/admin", "destination": "/admin/index.html" },
     { "source": "/", "destination": "/public/index.html" }
+  ],
+  "routes": [
+    { "src": "/restaurant/login(.html)?", "dest": "/restaurant/login.html" },
+    { "src": "/restaurant/signup(.html)?", "dest": "/restaurant/signup.html" },
+    { "src": "/restaurant/dashboard(.html)?", "dest": "/restaurant/dashboard.html" },
+    { "src": "/restaurant/dishes(.html)?", "dest": "/restaurant/dishes.html" },
+    { "src": "/restaurant/qr-codes(.html)?", "dest": "/restaurant/qr-codes.html" },
+    { "src": "/restaurant/3d-models(.html)?", "dest": "/restaurant/3d-models.html" },
+    { "src": "/restaurant/analytics(.html)?", "dest": "/restaurant/analytics.html" },
+    { "src": "/restaurant/subscription(.html)?", "dest": "/restaurant/subscription.html" },
+    { "src": "/restaurant/settings(.html)?", "dest": "/restaurant/settings.html" },
+    { "src": "/restaurant/forgot(.html)?", "dest": "/restaurant/forgot.html" },
+    { "src": "/ar/demo(.html)?", "dest": "/ar/demo.html" },
+    { "src": "/ar(/index.html)?", "dest": "/ar/index.html" },
+    { "src": "/admin(/index.html)?", "dest": "/admin/index.html" },
+    { "src": "/", "dest": "/public/index.html" }
   ]
 }
