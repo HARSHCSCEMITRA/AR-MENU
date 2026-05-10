@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Settings — ARMenu</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
+  <style>
+    :root{--primary:#00D4FF;--secondary:#7B2FFF;--bg:#050810;--bg2:#0a0f1e;--card:#111827;--text:#f0f4ff;--text-muted:#8892a4;--border:rgba(0,212,255,0.12);--success:#52c41a;--error:#ff4d4f;}
+    *{box-sizing:border-box;margin:0;padding:0;}
+    body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);}
+    .layout{display:flex;min-height:100vh;}
+    .sidebar{width:240px;background:var(--bg2);border-right:1px solid var(--border);position:fixed;top:0;left:0;bottom:0;z-index:50;}
+    .sb-logo{padding:20px 18px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px;}
+    .sb-logo-text{font-size:17px;font-weight:800;background:linear-gradient(135deg,var(--primary),var(--secondary));-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
+    .nav-item{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:10px;font-size:14px;font-weight:500;color:var(--text-muted);text-decoration:none;transition:all 0.2s;margin:1px 8px;}
+    .nav-item:hover{background:rgba(0,212,255,0.06);color:var(--text);}
+    .nav-item.active{background:rgba(0,212,255,0.1);color:var(--primary);font-weight:700;border:1px solid rgba(0,212,255,0.15);}
+    .main{margin-left:240px;flex:1;}
+    .topbar{background:var(--bg2);border-bottom:1px solid var(--border);padding:14px 28px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:40;}
+    .topbar-title{font-size:20px;font-weight:800;}
+    .logout-btn{padding:8px 16px;background:rgba(255,77,79,0.1);border:1px solid rgba(255,77,79,0.3);color:#ff4d4f;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;text-decoration:none;}
+    .content{padding:28px;max-width:700px;display:flex;flex-direction:column;gap:20px;}
+    .settings-card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:24px;}
+    .card-title{font-size:16px;font-weight:800;margin-bottom:18px;display:flex;align-items:center;gap:8px;}
+    .form-group{margin-bottom:14px;}
+    .form-label{font-size:12px;font-weight:600;color:var(--text-muted);margin-bottom:5px;display:block;}
+    .form-input{width:100%;padding:11px 14px;background:rgba(255,255,255,0.04);border:1.5px solid var(--border);border-radius:10px;font-size:14px;color:var(--text);outline:none;font-family:'Inter',sans-serif;transition:border-color 0.2s;}
+    .form-input:focus{border-color:var(--primary);}
+    .form-input::placeholder{color:var(--text-muted);}
+    .form-row{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+    .btn-save{padding:11px 24px;background:linear-gradient(135deg,var(--primary),var(--secondary));border:none;border-radius:10px;font-size:14px;font-weight:700;color:#050810;cursor:pointer;transition:all 0.2s;}
+    .btn-save:hover{transform:translateY(-1px);}
+    .btn-danger{padding:11px 24px;background:rgba(255,77,79,0.1);border:1px solid rgba(255,77,79,0.3);border-radius:10px;font-size:14px;font-weight:700;color:#ff4d4f;cursor:pointer;}
+    .password-wrap{position:relative;}
+    .eye-btn{position:absolute;right:12px;top:50%;transform:translateY(-50%);background:none;border:none;color:var(--text-muted);cursor:pointer;}
+    .succ-msg{background:rgba(82,196,26,0.1);border:1px solid rgba(82,196,26,0.3);color:var(--success);border-radius:8px;padding:10px 14px;font-size:13px;font-weight:600;margin-top:12px;display:none;}
+    @media(max-width:768px){.main{margin-left:0;}.sidebar{display:none;}.form-row{grid-template-columns:1fr;}}
+  </style>
+</head>
+<body>
+<div class="layout">
+  <div class="sidebar">
+    <div class="sb-logo"><span style="font-size:22px;">🍽️</span><div class="sb-logo-text">ARMenu</div></div>
+    <nav style="padding:14px 0;">
+      <a class="nav-item" href="dashboard.html">🏠 Dashboard</a>
+      <a class="nav-item" href="dishes.html">🍽️ My Dishes</a>
+      <a class="nav-item" href="qr-codes.html">🔲 QR Codes</a>
+      <a class="nav-item" href="3d-models.html">🎲 3D Models</a>
+      <a class="nav-item" href="analytics.html">📊 Analytics</a>
+      <a class="nav-item" href="subscription.html">💳 Subscription</a>
+      <a class="nav-item active" href="settings.html">⚙️ Settings</a>
+    </nav>
+  </div>
+  <div class="main">
+    <div class="topbar">
+      <div class="topbar-title">⚙️ Settings</div>
+      <a class="logout-btn" href="login.html">Logout</a>
+    </div>
+    <div class="content">
+      <!-- PROFILE -->
+      <div class="settings-card">
+        <div class="card-title">🏪 Restaurant Profile</div>
+        <div class="form-row">
+          <div class="form-group"><label class="form-label">Restaurant Name</label><input class="form-input" id="restName" placeholder="Spice Garden"/></div>
+          <div class="form-group"><label class="form-label">Owner Name</label><input class="form-input" id="ownerName" placeholder="Your name"/></div>
+        </div>
+        <div class="form-row">
+          <div class="form-group"><label class="form-label">Phone</label><input class="form-input" id="phone" type="tel" placeholder="+91 98765 43210"/></div>
+          <div class="form-group"><label class="form-label">City</label><input class="form-input" id="city" placeholder="Mumbai"/></div>
+        </div>
+        <div class="form-group"><label class="form-label">Email (read-only)</label><input class="form-input" id="email" readonly style="opacity:0.6;"/></div>
+        <button class="btn-save" onclick="saveProfile()">💾 Save Profile</button>
+        <div class="succ-msg" id="profileSaved">✅ Profile updated!</div>
+      </div>
+      <!-- PASSWORD -->
+      <div class="settings-card">
+        <div class="card-title">🔐 Change Password</div>
+        <div class="form-group"><label class="form-label">New Password</label>
+          <div class="password-wrap"><input class="form-input" id="newPwd" type="password" placeholder="Min. 8 characters"/><button class="eye-btn" onclick="togglePwd('newPwd',this)">👁️</button></div>
+        </div>
+        <div class="form-group"><label class="form-label">Confirm New Password</label>
+          <div class="password-wrap"><input class="form-input" id="confirmPwd" type="password" placeholder="Repeat password"/><button class="eye-btn" onclick="togglePwd('confirmPwd',this)">👁️</button></div>
+        </div>
+        <button class="btn-save" onclick="changePassword()">🔐 Update Password</button>
+        <div class="succ-msg" id="pwdSaved">✅ Password updated!</div>
+      </div>
+      <!-- DANGER ZONE -->
+      <div class="settings-card" style="border-color:rgba(255,77,79,0.2);">
+        <div class="card-title" style="color:#ff4d4f;">⚠️ Danger Zone</div>
+        <div style="font-size:13px;color:var(--text-muted);margin-bottom:14px;">Permanently delete your account and all data. This cannot be undone.</div>
+        <button class="btn-danger" onclick="if(confirm('Are you sure? This cannot be undone!'))alert('Contact support to delete your account.')">🗑️ Delete Account</button>
+      </div>
+    </div>
+  </div>
+</div>
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/12.13.0/firebase-app.js";
+  import { getAuth, onAuthStateChanged, updatePassword } from "https://www.gstatic.com/firebasejs/12.13.0/firebase-auth.js";
+  import { getFirestore, doc, getDoc, updateDoc } from "https://www.gstatic.com/firebasejs/12.13.0/firebase-firestore.js";
+  const firebaseConfig={apiKey:"AIzaSyD8_c3y8cUP3w1uG7CL3GGn_GqraWxbdWs",authDomain:"ar-menu-39559.firebaseapp.com",projectId:"ar-menu-39559",storageBucket:"ar-menu-39559.firebasestorage.app",messagingSenderId:"919934973947",appId:"1:919934973947:web:c9bba718bcbc8ba6967d5e"};
+  const app=initializeApp(firebaseConfig);
+  const auth=getAuth(app);const db=getFirestore(app);
+  let currentUser=null;
+  onAuthStateChanged(auth,async user=>{
+    if(!user){window.location.href='login.html';return;}
+    currentUser=user;
+    document.getElementById('email').value=user.email||'';
+    const snap=await getDoc(doc(db,'restaurants',user.uid));
+    if(snap.exists()){const d=snap.data();document.getElementById('restName').value=d.restaurantName||'';document.getElementById('ownerName').value=d.ownerName||'';document.getElementById('phone').value=d.phone||'';document.getElementById('city').value=d.city||'';}
+  });
+  window.saveProfile=async function(){
+    if(!currentUser)return;
+    await updateDoc(doc(db,'restaurants',currentUser.uid),{restaurantName:document.getElementById('restName').value,ownerName:document.getElementById('ownerName').value,phone:document.getElementById('phone').value,city:document.getElementById('city').value});
+    const el=document.getElementById('profileSaved');el.style.display='block';setTimeout(()=>el.style.display='none',2500);
+  };
+  window.changePassword=async function(){
+    const np=document.getElementById('newPwd').value;const cp=document.getElementById('confirmPwd').value;
+    if(np.length<8){alert('⚠️ Min 8 characters!');return;}
+    if(np!==cp){alert('⚠️ Passwords do not match!');return;}
+    try{await updatePassword(currentUser,np);const el=document.getElementById('pwdSaved');el.style.display='block';setTimeout(()=>el.style.display='none',2500);}
+    catch(e){alert('❌ '+e.message+'.\n\nTip: Re-login and try again.');}
+  };
+</script>
+<script>function togglePwd(id,btn){const el=document.getElementById(id);el.type=el.type==='password'?'text':'password';btn.textContent=el.type==='password'?'👁️':'🙈';}</script>
+</body>
+</html>

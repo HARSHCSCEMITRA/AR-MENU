@@ -1,0 +1,30 @@
+{
+  "cleanUrls": true,
+  "trailingSlash": false,
+  "rewrites": [
+    { "source": "/", "destination": "/public/index.html" },
+    { "source": "/home", "destination": "/public/index.html" },
+    { "source": "/login", "destination": "/restaurant/login.html" },
+    { "source": "/signup", "destination": "/restaurant/signup.html" },
+    { "source": "/dashboard", "destination": "/restaurant/dashboard.html" },
+    { "source": "/dishes", "destination": "/restaurant/dishes.html" },
+    { "source": "/qr-codes", "destination": "/restaurant/qr-codes.html" },
+    { "source": "/3d-models", "destination": "/restaurant/3d-models.html" },
+    { "source": "/analytics", "destination": "/restaurant/analytics.html" },
+    { "source": "/subscription", "destination": "/restaurant/subscription.html" },
+    { "source": "/settings", "destination": "/restaurant/settings.html" },
+    { "source": "/forgot", "destination": "/restaurant/forgot.html" },
+    { "source": "/ar", "destination": "/ar/index.html" },
+    { "source": "/demo", "destination": "/ar/demo.html" },
+    { "source": "/admin", "destination": "/admin/index.html" }
+  ],
+  "headers": [
+    {
+      "source": "/(.*)",
+      "headers": [
+        { "key": "X-Frame-Options", "value": "SAMEORIGIN" },
+        { "key": "X-Content-Type-Options", "value": "nosniff" }
+      ]
+    }
+  ]
+}

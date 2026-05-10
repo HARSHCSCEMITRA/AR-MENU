@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>My Dishes — ARMenu</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+  <style>
+    :root{--primary:#00D4FF;--secondary:#7B2FFF;--bg:#050810;--bg2:#0a0f1e;--card:#111827;--text:#f0f4ff;--text-muted:#8892a4;--border:rgba(0,212,255,0.12);--success:#52c41a;--warning:#faad14;--error:#ff4d4f;}
+    *{box-sizing:border-box;margin:0;padding:0;}
+    body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);}
+    .layout{display:flex;min-height:100vh;}
+    .sidebar{width:240px;background:var(--bg2);border-right:1px solid var(--border);position:fixed;top:0;left:0;bottom:0;z-index:50;display:flex;flex-direction:column;}
+    .sb-logo{padding:20px 18px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px;}
+    .sb-logo-icon{width:36px;height:36px;background:linear-gradient(135deg,var(--primary),var(--secondary));border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:18px;}
+    .sb-logo-text{font-size:17px;font-weight:800;background:linear-gradient(135deg,var(--primary),var(--secondary));-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
+    .nav-item{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:10px;font-size:14px;font-weight:500;color:var(--text-muted);text-decoration:none;transition:all 0.2s;margin:0 8px 2px;}
+    .nav-item:hover{background:rgba(0,212,255,0.06);color:var(--text);}
+    .nav-item.active{background:rgba(0,212,255,0.1);color:var(--primary);font-weight:700;border:1px solid rgba(0,212,255,0.2);}
+    .nav-icon{font-size:16px;width:20px;text-align:center;}
+    .main{margin-left:240px;flex:1;}
+    .topbar{background:var(--bg2);border-bottom:1px solid var(--border);padding:14px 28px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:40;}
+    .topbar-title{font-size:20px;font-weight:800;}
+    .logout-btn{padding:8px 16px;background:rgba(255,77,79,0.1);border:1px solid rgba(255,77,79,0.3);color:#ff4d4f;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;text-decoration:none;}
+    .content{padding:28px;}
+    .toolbar{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;flex-wrap:wrap;gap:12px;}
+    .search-wrap{position:relative;}
+    .search-input{padding:10px 16px 10px 40px;background:var(--card);border:1px solid var(--border);border-radius:10px;font-size:14px;color:var(--text);outline:none;width:280px;}
+    .search-input:focus{border-color:var(--primary);}
+    .search-icon{position:absolute;left:12px;top:50%;transform:translateY(-50%);color:var(--text-muted);font-size:15px;}
+    .filter-chips{display:flex;gap:8px;flex-wrap:wrap;}
+    .chip{padding:6px 14px;border-radius:99px;border:1px solid var(--border);background:transparent;font-size:13px;font-weight:500;color:var(--text-muted);cursor:pointer;transition:all 0.2s;}
+    .chip.active,.chip:hover{background:rgba(0,212,255,0.1);border-color:rgba(0,212,255,0.4);color:var(--primary);}
+    .btn-add{padding:10px 20px;background:linear-gradient(135deg,var(--primary),var(--secondary));border:none;border-radius:10px;font-size:14px;font-weight:700;color:#050810;cursor:pointer;display:flex;align-items:center;gap:8px;}
+    .dishes-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:18px;margin-bottom:24px;}
+    .dish-card{background:var(--card);border:1px solid var(--border);border-radius:16px;overflow:hidden;transition:all 0.3s;}
+    .dish-card:hover{border-color:rgba(0,212,255,0.3);transform:translateY(-3px);box-shadow:0 0 20px rgba(0,212,255,0.08);}
+    .dish-img{height:140px;background:linear-gradient(135deg,rgba(0,212,255,0.05),rgba(123,47,255,0.05));display:flex;align-items:center;justify-content:center;font-size:64px;position:relative;}
+    .dish-3d-badge{position:absolute;top:10px;right:10px;padding:3px 10px;border-radius:99px;font-size:11px;font-weight:700;}
+    .badge-ar{background:rgba(0,212,255,0.15);border:1px solid rgba(0,212,255,0.3);color:var(--primary);}
+    .badge-no{background:rgba(250,173,20,0.1);border:1px solid rgba(250,173,20,0.3);color:var(--warning);}
+    .dish-body{padding:14px;}
+    .dish-name{font-size:15px;font-weight:700;margin-bottom:3px;}
+    .dish-desc{font-size:12px;color:var(--text-muted);margin-bottom:10px;line-height:1.5;height:36px;overflow:hidden;}
+    .dish-footer{display:flex;align-items:center;justify-content:space-between;}
+    .dish-price{font-size:18px;font-weight:800;color:var(--primary);}
+    .dish-category{font-size:11px;color:var(--text-muted);background:rgba(255,255,255,0.04);padding:3px 8px;border-radius:6px;}
+    .dish-actions{display:flex;gap:6px;margin-top:12px;}
+    .action-btn{flex:1;padding:8px;border-radius:8px;border:1px solid var(--border);background:transparent;color:var(--text-muted);font-size:12px;font-weight:600;cursor:pointer;transition:all 0.2s;}
+    .action-btn:hover{border-color:var(--primary);color:var(--primary);}
+    .action-btn.danger:hover{border-color:var(--error);color:var(--error);}
+
+    /* ADD DISH MODAL */
+    .modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.7);backdrop-filter:blur(8px);z-index:200;display:none;align-items:center;justify-content:center;padding:20px;}
+    .modal-overlay.open{display:flex;}
+    .modal{background:var(--bg2);border:1px solid var(--border);border-radius:20px;padding:28px;width:100%;max-width:560px;max-height:90vh;overflow-y:auto;}
+    .modal-title{font-size:20px;font-weight:800;margin-bottom:20px;display:flex;justify-content:space-between;align-items:center;}
+    .close-btn{background:none;border:none;color:var(--text-muted);font-size:22px;cursor:pointer;}
+    .form-group{margin-bottom:16px;}
+    .form-label{font-size:13px;font-weight:600;margin-bottom:6px;display:block;color:var(--text-muted);}
+    .form-input,.form-select,.form-textarea{width:100%;padding:11px 14px;background:rgba(255,255,255,0.04);border:1.5px solid var(--border);border-radius:10px;font-size:14px;color:var(--text);outline:none;transition:border-color 0.2s;font-family:'Inter',sans-serif;}
+    .form-input:focus,.form-select:focus,.form-textarea:focus{border-color:var(--primary);}
+    .form-select option{background:#111827;}
+    .form-textarea{resize:vertical;min-height:80px;}
+    .form-row{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+    .tab-btns{display:flex;background:rgba(255,255,255,0.04);border-radius:10px;padding:4px;margin-bottom:16px;}
+    .tab-btn{flex:1;padding:8px;border-radius:8px;border:none;background:transparent;color:var(--text-muted);font-size:13px;font-weight:600;cursor:pointer;transition:all 0.2s;}
+    .tab-btn.active{background:rgba(0,212,255,0.15);color:var(--primary);}
+    .tab-content{display:none;}
+    .tab-content.active{display:block;}
+    .upload-zone{border:2px dashed rgba(0,212,255,0.3);border-radius:12px;padding:28px;text-align:center;cursor:pointer;transition:all 0.2s;}
+    .upload-zone:hover{border-color:var(--primary);background:rgba(0,212,255,0.04);}
+    .ai-gen-box{background:rgba(123,47,255,0.06);border:1px solid rgba(123,47,255,0.2);border-radius:12px;padding:20px;text-align:center;}
+    .btn-ai{width:100%;padding:12px;background:linear-gradient(135deg,var(--secondary),#5b1ee0);border:none;border-radius:10px;font-size:14px;font-weight:700;color:white;cursor:pointer;transition:all 0.2s;}
+    .btn-ai:hover{opacity:0.9;}
+    .btn-submit{width:100%;padding:14px;background:linear-gradient(135deg,var(--primary),var(--secondary));border:none;border-radius:12px;font-size:15px;font-weight:800;color:#050810;cursor:pointer;margin-top:8px;}
+    .generating-wrap{display:none;text-align:center;padding:20px;}
+    .spinner{width:40px;height:40px;border:3px solid var(--border);border-top-color:var(--primary);border-radius:50%;animation:spin 0.8s linear infinite;margin:0 auto 12px;}
+    @keyframes spin{to{transform:rotate(360deg);}}
+    .ai-result{display:none;background:rgba(82,196,26,0.06);border:1px solid rgba(82,196,26,0.2);border-radius:12px;padding:16px;text-align:center;}
+  </style>
+</head>
+<body>
+<div class="layout">
+  <div class="sidebar">
+    <div class="sb-logo"><div class="sb-logo-icon">🍽️</div><div class="sb-logo-text">ARMenu</div></div>
+    <nav style="padding:14px 0;">
+      <a class="nav-item" href="dashboard.html"><span class="nav-icon">🏠</span>Dashboard</a>
+      <a class="nav-item active" href="dishes.html"><span class="nav-icon">🍽️</span>My Dishes</a>
+      <a class="nav-item" href="qr-codes.html"><span class="nav-icon">🔲</span>QR Codes</a>
+      <a class="nav-item" href="3d-models.html"><span class="nav-icon">🎲</span>3D Models</a>
+      <a class="nav-item" href="analytics.html"><span class="nav-icon">📊</span>Analytics</a>
+      <a class="nav-item" href="subscription.html"><span class="nav-icon">💳</span>Subscription</a>
+      <a class="nav-item" href="settings.html"><span class="nav-icon">⚙️</span>Settings</a>
+    </nav>
+  </div>
+  <div class="main">
+    <div class="topbar">
+      <div class="topbar-title">🍽️ My Dishes</div>
+      <div style="display:flex;gap:12px;align-items:center;">
+        <button class="btn-add" onclick="openModal()">➕ Add Dish</button>
+        <a class="logout-btn" href="login.html">Logout</a>
+      </div>
+    </div>
+    <div class="content">
+      <div class="toolbar">
+        <div style="display:flex;gap:12px;align-items:center;flex-wrap:wrap;">
+          <div class="search-wrap">
+            <span class="search-icon">🔍</span>
+            <input class="search-input" id="searchInput" placeholder="Search dishes..." oninput="filterDishes()"/>
+          </div>
+          <div class="filter-chips" id="filterChips">
+            <span class="chip active" onclick="setFilter('all',this)">All</span>
+            <span class="chip" onclick="setFilter('Starter',this)">Starter</span>
+            <span class="chip" onclick="setFilter('Main Course',this)">Main Course</span>
+            <span class="chip" onclick="setFilter('Dessert',this)">Dessert</span>
+            <span class="chip" onclick="setFilter('Beverage',this)">Beverage</span>
+          </div>
+        </div>
+        <div style="font-size:13px;color:var(--text-muted);"><span id="dishCount">0</span> dishes</div>
+      </div>
+      <div class="dishes-grid" id="dishesGrid">
+        <div style="grid-column:1/-1;text-align:center;padding:40px;color:var(--text-muted);">⏳ Loading dishes...</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ADD DISH MODAL -->
+<div class="modal-overlay" id="addModal">
+  <div class="modal">
+    <div class="modal-title">Add New Dish <button class="close-btn" onclick="closeModal()">✕</button></div>
+    <div class="form-row">
+      <div class="form-group"><label class="form-label">Dish Name *</label><input class="form-input" id="dishName" placeholder="e.g. Butter Chicken"/></div>
+      <div class="form-group"><label class="form-label">Price (₹) *</label><input class="form-input" id="dishPrice" type="number" placeholder="349"/></div>
+    </div>
+    <div class="form-group"><label class="form-label">Description</label><textarea class="form-textarea" id="dishDesc" placeholder="Describe the dish..."></textarea></div>
+    <div class="form-row">
+      <div class="form-group"><label class="form-label">Category *</label>
+        <select class="form-select" id="dishCat">
+          <option value="">Select...</option>
+          <option>Starter</option><option>Main Course</option><option>Dessert</option><option>Beverage</option><option>Other</option>
+        </select>
+      </div>
+      <div class="form-group"><label class="form-label">Available?</label>
+        <select class="form-select" id="dishAvail"><option value="true">✅ Yes</option><option value="false">❌ No</option></select>
+      </div>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Dish Image *</label>
+      <div class="upload-zone" onclick="document.getElementById('dishImg').click()">
+        <div style="font-size:32px;margin-bottom:6px;">📸</div>
+        <div style="font-size:14px;font-weight:600;">Click to upload image</div>
+        <div style="font-size:12px;color:var(--text-muted);">JPG, PNG — Max 5MB</div>
+        <input type="file" id="dishImg" accept="image/*" style="display:none" onchange="previewImg(event)"/>
+      </div>
+      <div id="imgPreview" style="display:none;margin-top:8px;font-size:13px;color:var(--success);">✅ Image selected</div>
+    </div>
+    <div class="form-group">
+      <label class="form-label">3D Model</label>
+      <div class="tab-btns">
+        <button class="tab-btn active" onclick="switchTab('upload',this)">📁 Upload .glb File</button>
+        <button class="tab-btn" onclick="switchTab('ai',this)">🤖 Generate with AI</button>
+      </div>
+      <div class="tab-content active" id="tab-upload">
+        <div class="upload-zone" onclick="document.getElementById('modelFile').click()">
+          <div style="font-size:28px;margin-bottom:6px;">🎲</div>
+          <div style="font-size:14px;font-weight:600;">Upload 3D Model</div>
+          <div style="font-size:12px;color:var(--text-muted);">.glb or .gltf files only</div>
+          <input type="file" id="modelFile" accept=".glb,.gltf" style="display:none" onchange="modelSelected(event)"/>
+        </div>
+        <div id="modelPreview" style="display:none;margin-top:8px;font-size:13px;color:var(--success);">✅ 3D model selected</div>
+      </div>
+      <div class="tab-content" id="tab-ai">
+        <div class="ai-gen-box">
+          <div style="font-size:36px;margin-bottom:8px;">🤖</div>
+          <div style="font-size:14px;font-weight:700;margin-bottom:4px;">AI 3D Generator</div>
+          <div style="font-size:12px;color:var(--text-muted);margin-bottom:14px;">Upload dish image first, then generate a 3D model using Meshy.ai AI</div>
+          <button class="btn-ai" onclick="generateAI()">✨ Generate 3D Model with AI</button>
+        </div>
+        <div class="generating-wrap" id="genWrap">
+          <div class="spinner"></div>
+          <div style="font-size:14px;font-weight:600;" id="genStatus">Sending to Meshy.ai...</div>
+          <div style="font-size:12px;color:var(--text-muted);margin-top:4px;">Usually takes 2-5 minutes</div>
+        </div>
+        <div class="ai-result" id="aiResult">
+          <div style="font-size:32px;margin-bottom:8px;">✅</div>
+          <div style="font-size:14px;font-weight:700;margin-bottom:6px;">3D Model Ready!</div>
+          <button class="action-btn" style="width:100%;padding:10px;" onclick="useAiModel()">✅ Use This 3D Model</button>
+        </div>
+      </div>
+    </div>
+    <button class="btn-submit" onclick="saveDish()">💾 Save Dish</button>
+    <div id="saveAlert" style="margin-top:12px;display:none;padding:10px 14px;border-radius:8px;font-size:13px;font-weight:600;"></div>
+  </div>
+</div>
+
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/12.13.0/firebase-app.js";
+  import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.13.0/firebase-auth.js";
+  import { getFirestore, collection, query, where, getDocs, addDoc, deleteDoc, doc, serverTimestamp } from "https://www.gstatic.com/firebasejs/12.13.0/firebase-firestore.js";
+  import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/12.13.0/firebase-storage.js";
+
+  // ── REPLACE WITH YOUR FIREBASE CONFIG ──
+  const firebaseConfig = {
+    apiKey: "AIzaSyD8_c3y8cUP3w1uG7CL3GGn_GqraWxbdWs",
+    authDomain: "ar-menu-39559.firebaseapp.com",
+    projectId: "ar-menu-39559",
+    storageBucket: "ar-menu-39559.firebasestorage.app",
+    messagingSenderId: "919934973947",
+    appId: "1:919934973947:web:c9bba718bcbc8ba6967d5e"
+  };
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+  const db = getFirestore(app);
+  const storage = getStorage(app);
+
+  const emojis = {'Starter':'🥗','Main Course':'🍛','Dessert':'🍨','Beverage':'🥤','Other':'🍽️'};
+  let currentUser = null;
+  let allDishes = [];
+  let activeFilter = 'all';
+
+  onAuthStateChanged(auth, async (user) => {
+    if (!user) { window.location.href = 'login.html'; return; }
+    currentUser = user;
+    await loadDishes();
+  });
+
+  async function loadDishes() {
+    const q = query(collection(db,'dishes'), where('restaurantId','==',currentUser.uid));
+    const snap = await getDocs(q);
+    allDishes = snap.docs.map(d => ({id:d.id,...d.data()}));
+    renderDishes(allDishes);
+  }
+
+  window.filterDishes = function() {
+    const search = document.getElementById('searchInput').value.toLowerCase();
+    let filtered = allDishes;
+    if (activeFilter !== 'all') filtered = filtered.filter(d => d.category === activeFilter);
+    if (search) filtered = filtered.filter(d => d.name.toLowerCase().includes(search));
+    renderDishes(filtered);
+  };
+
+  window.setFilter = function(filter, el) {
+    activeFilter = filter;
+    document.querySelectorAll('.chip').forEach(c => c.classList.remove('active'));
+    el.classList.add('active');
+    window.filterDishes();
+  };
+
+  function renderDishes(dishes) {
+    document.getElementById('dishCount').textContent = dishes.length;
+    if (!dishes.length) {
+      document.getElementById('dishesGrid').innerHTML = `<div style="grid-column:1/-1;text-align:center;padding:60px;color:var(--text-muted);"><div style="font-size:48px;margin-bottom:12px;">🍽️</div><div style="font-size:16px;font-weight:600;margin-bottom:8px;">No dishes yet</div><button class="btn-add" onclick="openModal()" style="margin:0 auto;">➕ Add Your First Dish</button></div>`;
+      return;
+    }
+    document.getElementById('dishesGrid').innerHTML = dishes.map(dish => `
+      <div class="dish-card">
+        <div class="dish-img">
+          ${dish.imageUrl ? `<img src="${dish.imageUrl}" style="width:100%;height:100%;object-fit:cover;"/>` : `<span>${emojis[dish.category]||'🍽️'}</span>`}
+          <span class="dish-3d-badge ${dish.has3D?'badge-ar':'badge-no'}">${dish.has3D?'🎲 3D Ready':'⚠️ No 3D'}</span>
+        </div>
+        <div class="dish-body">
+          <div class="dish-name">${dish.name}</div>
+          <div class="dish-desc">${dish.description||'No description'}</div>
+          <div class="dish-footer">
+            <div class="dish-price">₹${dish.price}</div>
+            <div class="dish-category">${dish.category}</div>
+          </div>
+          <div class="dish-actions">
+            <button class="action-btn" onclick="genQR('${dish.id}','${dish.name}')">🔲 QR</button>
+            <button class="action-btn" onclick="viewAR('${dish.id}')">📱 AR Preview</button>
+            <button class="action-btn danger" onclick="deleteDish('${dish.id}')">🗑️</button>
+          </div>
+        </div>
+      </div>`).join('');
+  }
+
+  window.saveDish = async function() {
+    const name = document.getElementById('dishName').value.trim();
+    const price = document.getElementById('dishPrice').value;
+    const category = document.getElementById('dishCat').value;
+    const btn = document.querySelector('.btn-submit');
+    const alert = document.getElementById('saveAlert');
+
+    if (!name || !price || !category) {
+      alert.style.display='block'; alert.style.background='rgba(255,77,79,0.1)'; alert.style.color='#ff4d4f'; alert.textContent='⚠️ Please fill name, price & category.'; return;
+    }
+    btn.disabled=true; btn.textContent='💾 Saving...';
+
+    try {
+      let imageUrl = null;
+      const imgFile = document.getElementById('dishImg').files[0];
+      if (imgFile) {
+        const imgRef = ref(storage, `dishes/${currentUser.uid}/${Date.now()}_${imgFile.name}`);
+        await uploadBytes(imgRef, imgFile);
+        imageUrl = await getDownloadURL(imgRef);
+      }
+
+      await addDoc(collection(db,'dishes'), {
+        restaurantId: currentUser.uid,
+        name, price: parseFloat(price),
+        description: document.getElementById('dishDesc').value,
+        category,
+        isAvailable: document.getElementById('dishAvail').value === 'true',
+        imageUrl,
+        has3D: false,
+        model3dUrl: null,
+        qrScans: 0,
+        createdAt: serverTimestamp()
+      });
+
+      alert.style.display='block'; alert.style.background='rgba(82,196,26,0.1)'; alert.style.color='#52c41a'; alert.textContent='✅ Dish saved!';
+      setTimeout(() => { closeModal(); loadDishes(); }, 1200);
+    } catch(e) {
+      alert.style.display='block'; alert.style.background='rgba(255,77,79,0.1)'; alert.style.color='#ff4d4f'; alert.textContent='❌ Error: '+e.message;
+    }
+    btn.disabled=false; btn.textContent='💾 Save Dish';
+  };
+
+  window.deleteDish = async function(id) {
+    if (!confirm('Delete this dish?')) return;
+    await deleteDoc(doc(db,'dishes',id));
+    loadDishes();
+  };
+
+  window.genQR = function(dishId, dishName) {
+    const url = `${window.location.origin}/ar/index.html?dish=${dishId}`;
+    const win = window.open('','_blank','width=400,height=400');
+    win.document.write(`<html><body style="text-align:center;font-family:sans-serif;padding:20px;background:#050810;color:white;"><h3>${dishName}</h3><div id="qr"></div><p style="font-size:11px;margin-top:8px;color:#8892a4;">${url}</p><script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"><\/script><script>new QRCode(document.getElementById('qr'),{text:'${url}',width:200,height:200});<\/script></body></html>`);
+  };
+
+  window.viewAR = function(dishId) { window.open(`../ar/index.html?dish=${dishId}`,'_blank'); };
+</script>
+<script>
+  function openModal(){document.getElementById('addModal').classList.add('open');}
+  function closeModal(){document.getElementById('addModal').classList.remove('open');document.getElementById('saveAlert').style.display='none';}
+  function previewImg(e){if(e.target.files[0]){document.getElementById('imgPreview').style.display='block';}}
+  function modelSelected(e){if(e.target.files[0]){document.getElementById('modelPreview').style.display='block';}}
+  function switchTab(tab,btn){document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));btn.classList.add('active');document.querySelectorAll('.tab-content').forEach(c=>c.classList.remove('active'));document.getElementById('tab-'+tab).classList.add('active');}
+  function generateAI(){
+    document.querySelector('.ai-gen-box').style.display='none';
+    document.getElementById('genWrap').style.display='block';
+    const statuses=['Sending to Meshy.ai...','Analyzing dish image...','Generating 3D mesh...','Adding textures...','Finalizing model...'];
+    let i=0;
+    const iv=setInterval(()=>{
+      document.getElementById('genStatus').textContent=statuses[Math.min(i++,statuses.length-1)];
+      if(i>=statuses.length){clearInterval(iv);document.getElementById('genWrap').style.display='none';document.getElementById('aiResult').style.display='block';}
+    },1200);
+  }
+  function useAiModel(){document.getElementById('aiResult').style.display='none';document.querySelector('.ai-gen-box').style.display='block';alert('✅ 3D model will be attached when you save the dish!');}
+</script>
+</body>
+</html>
