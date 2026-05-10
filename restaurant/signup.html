@@ -135,7 +135,7 @@
 
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/12.13.0/firebase-app.js";
-    import { getAuth, createUserWithEmailAndPassword, updateProfile, signInWithPopup, GoogleAuthProvider } from "https://www.gstatic.com/firebasejs/12.13.0/firebase-auth.js";
+    import { getAuth, createUserWithEmailAndPassword, updateProfile, signInWithPopup, signInWithRedirect, getRedirectResult, GoogleAuthProvider } from "https://www.gstatic.com/firebasejs/12.13.0/firebase-auth.js";
     import { getFirestore, doc, setDoc, getDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/12.13.0/firebase-firestore.js";
 
     const firebaseConfig = {
@@ -152,20 +152,13 @@
     const db = getFirestore(app);
     const googleProvider = new GoogleAuthProvider();
 
-    // ── GOOGLE SIGNUP ──
-    window.doGoogleSignup = async function() {
-      const btn = document.getElementById('googleBtn');
-      btn.disabled = true;
-      btn.textContent = '⏳ Opening Google...';
-
+    // ── GOOGLE REDIRECT RESULT (page load pe check karo) ──
+    getRedirectResult(auth).then(async (result) => {
+      if (!result) return;
+      const user = result.user;
       try {
-        const result = await signInWithPopup(auth, googleProvider);
-        const user = result.user;
-
-        // Check if profile already exists
         const restRef = doc(db, 'restaurants', user.uid);
         const snap = await getDoc(restRef);
-
         if (!snap.exists()) {
           await setDoc(restRef, {
             uid: user.uid,
@@ -184,16 +177,26 @@
             createdAt: serverTimestamp()
           });
         }
-
         showAlert('success', '🎉 Google signup successful! Redirecting...');
         setTimeout(() => window.location.href = 'dashboard.html', 1200);
-
       } catch (err) {
-        const msgs = {
-          'auth/popup-closed-by-user': '⚠️ Popup closed. Please try again.',
-          'auth/popup-blocked': '⚠️ Popup blocked! Allow popups in browser settings.',
-        };
-        showAlert('error', msgs[err.code] || '❌ Google error: ' + err.message);
+        showAlert('error', '❌ Error saving data: ' + err.message);
+      }
+    }).catch((err) => {
+      if (err.code !== 'auth/no-auth-event') {
+        showAlert('error', '❌ Google error: ' + err.message);
+      }
+    });
+
+    // ── GOOGLE SIGNUP ──
+    window.doGoogleSignup = async function() {
+      const btn = document.getElementById('googleBtn');
+      btn.disabled = true;
+      btn.textContent = '⏳ Redirecting to Google...';
+      try {
+        await signInWithRedirect(auth, googleProvider);
+      } catch (err) {
+        showAlert('error', '❌ Google error: ' + err.message);
         btn.disabled = false;
         btn.textContent = '🔵 Sign up with Google — Instant Access';
       }
