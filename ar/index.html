@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+  <meta name="theme-color" content="#050810"/>
+  <title>AR Menu — See Your Dish in 3D</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet"/>
+  <!-- MindAR.js + Three.js for WebAR -->
+  <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.2/dist/mindar-image-three.prod.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r134/three.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/three@0.134.0/examples/js/loaders/GLTFLoader.js"></script>
+  <style>
+    :root{--primary:#00D4FF;--secondary:#7B2FFF;--bg:#050810;--card:rgba(10,15,30,0.92);--text:#f0f4ff;--text-muted:#8892a4;}
+    *{box-sizing:border-box;margin:0;padding:0;}
+    body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);overflow:hidden;height:100vh;width:100vw;}
+
+    /* ─── LOADING SCREEN ─── */
+    #loadingScreen{position:fixed;inset:0;background:var(--bg);z-index:200;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:24px;}
+    .load-logo{font-size:48px;margin-bottom:16px;animation:bounce 1s infinite;}
+    @keyframes bounce{0%,100%{transform:translateY(0);}50%{transform:translateY(-10px);}}
+    .load-title{font-size:24px;font-weight:800;margin-bottom:8px;}
+    .load-sub{font-size:14px;color:var(--text-muted);margin-bottom:28px;}
+    .load-bar{width:240px;height:4px;background:rgba(255,255,255,0.08);border-radius:2px;overflow:hidden;margin-bottom:12px;}
+    .load-fill{height:100%;background:linear-gradient(90deg,var(--primary),var(--secondary));border-radius:2px;width:0%;transition:width 0.3s;}
+    .load-step{font-size:12px;color:var(--text-muted);}
+
+    /* ─── CAMERA PERMISSION ─── */
+    #permScreen{position:fixed;inset:0;background:var(--bg);z-index:190;display:none;align-items:center;justify-content:center;flex-direction:column;text-align:center;padding:32px;}
+    .perm-icon{font-size:64px;margin-bottom:20px;}
+    .perm-title{font-size:22px;font-weight:800;margin-bottom:8px;}
+    .perm-sub{font-size:14px;color:var(--text-muted);margin-bottom:24px;line-height:1.6;}
+    .btn-allow{padding:16px 36px;background:linear-gradient(135deg,var(--primary),var(--secondary));border:none;border-radius:12px;font-size:16px;font-weight:800;color:#050810;cursor:pointer;}
+
+    /* ─── AR CONTAINER ─── */
+    #arContainer{position:fixed;inset:0;display:none;}
+    #arContainer.active{display:block;}
+
+    /* ─── AR OVERLAYS ─── */
+    #scanHint{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);z-index:50;text-align:center;pointer-events:none;}
+    .scan-frame{width:220px;height:220px;border:2px solid rgba(0,212,255,0.6);border-radius:20px;position:relative;animation:scanPulse 2s ease-in-out infinite;}
+    .scan-corner{position:absolute;width:24px;height:24px;border-color:var(--primary);border-style:solid;}
+    .sc-tl{top:-2px;left:-2px;border-width:3px 0 0 3px;border-radius:4px 0 0 0;}
+    .sc-tr{top:-2px;right:-2px;border-width:3px 3px 0 0;border-radius:0 4px 0 0;}
+    .sc-bl{bottom:-2px;left:-2px;border-width:0 0 3px 3px;border-radius:0 0 0 4px;}
+    .sc-br{bottom:-2px;right:-2px;border-width:0 3px 3px 0;border-radius:0 0 4px 0;}
+    @keyframes scanPulse{0%,100%{box-shadow:0 0 0 0 rgba(0,212,255,0.4);}50%{box-shadow:0 0 0 16px rgba(0,212,255,0);}}
+    .scan-line{position:absolute;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,var(--primary),transparent);animation:scanLine 2s linear infinite;top:0;}
+    @keyframes scanLine{from{top:0;}to{top:100%;}}
+    .scan-text{font-size:14px;font-weight:600;color:white;margin-top:14px;text-shadow:0 2px 8px rgba(0,0,0,0.8);}
+
+    /* ─── DISH INFO PANEL ─── */
+    #dishPanel{position:fixed;bottom:0;left:0;right:0;z-index:60;padding:16px;background:transparent;}
+    .dish-card{background:var(--card);border:1px solid rgba(0,212,255,0.2);border-radius:20px;padding:16px 20px;backdrop-filter:blur(20px);display:flex;align-items:center;gap:14px;}
+    .dish-thumb{width:56px;height:56px;border-radius:14px;background:linear-gradient(135deg,rgba(0,212,255,0.1),rgba(123,47,255,0.1));display:flex;align-items:center;justify-content:center;font-size:28px;flex-shrink:0;overflow:hidden;}
+    .dish-thumb img{width:100%;height:100%;object-fit:cover;border-radius:12px;}
+    .dish-info{flex:1;min-width:0;}
+    .dish-name{font-size:16px;font-weight:800;margin-bottom:2px;}
+    .dish-desc{font-size:12px;color:var(--text-muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+    .dish-price{font-size:22px;font-weight:800;color:var(--primary);flex-shrink:0;}
+
+    /* ─── AR CONTROLS ─── */
+    #arControls{position:fixed;top:70px;right:16px;z-index:60;display:flex;flex-direction:column;gap:10px;}
+    .ctrl-btn{width:44px;height:44px;background:var(--card);border:1px solid rgba(0,212,255,0.2);border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:18px;cursor:pointer;backdrop-filter:blur(12px);}
+
+    /* ─── TOP BAR ─── */
+    #arTopBar{position:fixed;top:0;left:0;right:0;z-index:60;padding:12px 16px;display:flex;align-items:center;justify-content:space-between;}
+    .ar-logo{display:flex;align-items:center;gap:8px;background:var(--card);border:1px solid rgba(0,212,255,0.2);border-radius:12px;padding:8px 12px;backdrop-filter:blur(12px);}
+    .ar-logo-icon{font-size:18px;}
+    .ar-logo-text{font-size:13px;font-weight:800;color:var(--primary);}
+    .ar-live{background:rgba(0,212,255,0.15);border:1px solid rgba(0,212,255,0.3);border-radius:99px;padding:5px 12px;font-size:11px;font-weight:700;color:var(--primary);animation:livePulse 2s infinite;}
+    @keyframes livePulse{0%,100%{opacity:1;}50%{opacity:0.6;}}
+
+    /* ─── NO 3D FALLBACK ─── */
+    #fallbackView{position:fixed;inset:0;background:var(--bg);z-index:100;display:none;flex-direction:column;align-items:center;justify-content:center;padding:24px;text-align:center;}
+    .fallback-dish-img{width:200px;height:200px;border-radius:24px;background:linear-gradient(135deg,rgba(0,212,255,0.1),rgba(123,47,255,0.1));border:1px solid rgba(0,212,255,0.2);display:flex;align-items:center;justify-content:center;font-size:96px;margin-bottom:20px;}
+    .full-menu-btn{padding:14px 28px;background:linear-gradient(135deg,var(--primary),var(--secondary));border:none;border-radius:12px;font-size:15px;font-weight:700;color:#050810;cursor:pointer;margin-top:16px;}
+
+    /* ─── VIEW FULL MENU BTN ─── */
+    #menuBtn{position:fixed;bottom:140px;left:16px;z-index:60;}
+    .menu-btn{padding:10px 16px;background:var(--card);border:1px solid rgba(0,212,255,0.2);border-radius:12px;font-size:13px;font-weight:700;color:var(--primary);cursor:pointer;backdrop-filter:blur(12px);}
+  </style>
+</head>
+<body>
+
+<!-- LOADING SCREEN -->
+<div id="loadingScreen">
+  <div class="load-logo">🍽️</div>
+  <div class="load-title">ARMenu</div>
+  <div class="load-sub" id="restBrand">Loading restaurant menu...</div>
+  <div class="load-bar"><div class="load-fill" id="loadBar"></div></div>
+  <div class="load-step" id="loadStep">Initializing AR...</div>
+</div>
+
+<!-- CAMERA PERMISSION SCREEN -->
+<div id="permScreen">
+  <div class="perm-icon">📷</div>
+  <div class="perm-title">Camera Permission Needed</div>
+  <div class="perm-sub">ARMenu needs your camera to show 3D dishes on your table.<br/>Tap Allow to enable AR experience.</div>
+  <button class="btn-allow" onclick="requestCamera()">📷 Allow Camera & Start AR</button>
+</div>
+
+<!-- AR CONTAINER (MindAR renders here) -->
+<div id="arContainer">
+  <!-- MindAR target: scan flat surface/table marker -->
+  <a-scene id="arScene" mindar-image="imageTargetSrc: ../assets/targets.mind; autoStart: true; uiScanning: no; uiLoading: no;" color-space="sRGB" renderer="colorManagement: true, physicallyCorrectLights" vr-mode-ui="enabled: false" device-orientation-permission-ui="enabled: false">
+    <a-assets>
+      <a-asset-item id="dishModel3D" src=""></a-asset-item>
+    </a-assets>
+    <a-camera position="0 0 0" look-controls="enabled: false"></a-camera>
+    <a-entity mindar-image-target="targetIndex: 0">
+      <a-gltf-model id="arModel" src="#dishModel3D" position="0 0 0.1" scale="0.15 0.15 0.15" rotation="0 0 0" animation="property: rotation; to: 0 360 0; loop: true; dur: 8000; easing: linear"></a-gltf-model>
+    </a-entity>
+  </a-scene>
+
+  <!-- TOP BAR -->
+  <div id="arTopBar">
+    <div class="ar-logo"><div class="ar-logo-icon">🍽️</div><div class="ar-logo-text">ARMenu</div></div>
+    <div class="ar-live">● AR LIVE</div>
+  </div>
+
+  <!-- SCAN HINT -->
+  <div id="scanHint">
+    <div class="scan-frame">
+      <div class="scan-corner sc-tl"></div>
+      <div class="scan-corner sc-tr"></div>
+      <div class="scan-corner sc-bl"></div>
+      <div class="scan-corner sc-br"></div>
+      <div class="scan-line"></div>
+    </div>
+    <div class="scan-text">Point camera at flat surface</div>
+  </div>
+
+  <!-- AR CONTROLS -->
+  <div id="arControls">
+    <div class="ctrl-btn" onclick="scaleUp()" title="Scale Up">➕</div>
+    <div class="ctrl-btn" onclick="scaleDown()" title="Scale Down">➖</div>
+    <div class="ctrl-btn" onclick="resetScale()" title="Reset">🔄</div>
+  </div>
+
+  <!-- DISH PANEL -->
+  <div id="dishPanel">
+    <div class="dish-card">
+      <div class="dish-thumb" id="panelThumb">🍽️</div>
+      <div class="dish-info">
+        <div class="dish-name" id="panelName">Loading...</div>
+        <div class="dish-desc" id="panelDesc">-</div>
+      </div>
+      <div class="dish-price" id="panelPrice">₹-</div>
+    </div>
+  </div>
+
+  <!-- VIEW FULL MENU -->
+  <div id="menuBtn">
+    <button class="menu-btn" id="fullMenuBtn">📋 Full Menu</button>
+  </div>
+</div>
+
+<!-- FALLBACK (No 3D model) -->
+<div id="fallbackView">
+  <div class="fallback-dish-img" id="fbThumb">🍽️</div>
+  <div style="font-size:22px;font-weight:800;margin-bottom:6px;" id="fbName">-</div>
+  <div style="font-size:14px;color:var(--text-muted);margin-bottom:4px;" id="fbDesc">-</div>
+  <div style="font-size:28px;font-weight:800;color:var(--primary);" id="fbPrice">₹-</div>
+  <div style="font-size:12px;color:var(--text-muted);margin-top:16px;">⚠️ 3D model not available for this dish</div>
+  <button class="full-menu-btn" id="fbMenuBtn">📋 View Full Menu</button>
+</div>
+
+<!-- Firebase -->
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/12.13.0/firebase-app.js";
+  import { getFirestore, doc, getDoc, updateDoc, increment } from "https://www.gstatic.com/firebasejs/12.13.0/firebase-firestore.js";
+
+  // ── REPLACE WITH YOUR FIREBASE CONFIG ──
+  const firebaseConfig = {
+    apiKey: "AIzaSyD8_c3y8cUP3w1uG7CL3GGn_GqraWxbdWs",
+    authDomain: "ar-menu-39559.firebaseapp.com",
+    projectId: "ar-menu-39559",
+    storageBucket: "ar-menu-39559.firebasestorage.app",
+    messagingSenderId: "919934973947",
+    appId: "1:919934973947:web:c9bba718bcbc8ba6967d5e"
+  };
+  const app = initializeApp(firebaseConfig);
+  const db = getFirestore(app);
+
+  // Load progress
+  function setProgress(pct, step) {
+    document.getElementById('loadBar').style.width = pct + '%';
+    document.getElementById('loadStep').textContent = step;
+  }
+
+  async function loadDish() {
+    const params = new URLSearchParams(window.location.search);
+    const dishId = params.get('dish');
+
+    if (!dishId) {
+      document.getElementById('loadStep').textContent = '❌ No dish ID in URL';
+      return;
+    }
+
+    setProgress(20, 'Fetching dish data...');
+    try {
+      const dishDoc = await getDoc(doc(db, 'dishes', dishId));
+      if (!dishDoc.exists()) {
+        document.getElementById('loadStep').textContent = '❌ Dish not found';
+        return;
+      }
+      const dish = dishDoc.data();
+      setProgress(50, 'Loading AR experience...');
+
+      // Update scan count
+      try { await updateDoc(doc(db,'dishes',dishId), {qrScans: increment(1)}); } catch(e){}
+
+      // Update UI
+      document.getElementById('panelName').textContent = dish.name;
+      document.getElementById('panelDesc').textContent = dish.description || dish.category;
+      document.getElementById('panelPrice').textContent = '₹' + dish.price;
+      document.getElementById('restBrand').textContent = 'Loading AR for ' + dish.name;
+      document.getElementById('fbName').textContent = dish.name;
+      document.getElementById('fbDesc').textContent = dish.description || '';
+      document.getElementById('fbPrice').textContent = '₹' + dish.price;
+
+      if (dish.imageUrl) {
+        document.getElementById('panelThumb').innerHTML = `<img src="${dish.imageUrl}"/>`;
+        document.getElementById('fbThumb').innerHTML = `<img src="${dish.imageUrl}" style="width:100%;height:100%;object-fit:cover;border-radius:20px;"/>`;
+      }
+
+      setProgress(80, 'Starting AR camera...');
+
+      if (dish.has3D && dish.model3dUrl) {
+        // Has 3D model — start AR
+        document.getElementById('dishModel3D').setAttribute('src', dish.model3dUrl);
+        setProgress(100, 'AR Ready!');
+        setTimeout(() => {
+          document.getElementById('loadingScreen').style.display = 'none';
+          document.getElementById('arContainer').classList.add('active');
+          // Hide scan hint after 5s
+          setTimeout(() => { document.getElementById('scanHint').style.opacity = '0'; }, 5000);
+        }, 800);
+      } else {
+        // No 3D — show fallback card view
+        setProgress(100, 'Loading dish preview...');
+        setTimeout(() => {
+          document.getElementById('loadingScreen').style.display = 'none';
+          document.getElementById('fallbackView').style.display = 'flex';
+        }, 800);
+      }
+
+      // Full menu button
+      const menuUrl = `../restaurant/menu.html?restaurant=${dish.restaurantId}`;
+      document.getElementById('fullMenuBtn').onclick = () => window.open(menuUrl,'_blank');
+      document.getElementById('fbMenuBtn').onclick = () => window.open(menuUrl,'_blank');
+
+    } catch(e) {
+      document.getElementById('loadStep').textContent = '❌ Error: ' + e.message;
+      console.error(e);
+    }
+  }
+
+  // Start
+  setProgress(10, 'Initializing...');
+  setTimeout(loadDish, 500);
+</script>
+<script>
+  function requestCamera(){document.getElementById('permScreen').style.display='none';document.getElementById('loadingScreen').style.display='flex';}
+  let scale=0.15;
+  function scaleUp(){scale=Math.min(scale+0.03,0.5);const m=document.getElementById('arModel');if(m)m.setAttribute('scale',`${scale} ${scale} ${scale}`);}
+  function scaleDown(){scale=Math.max(scale-0.03,0.05);const m=document.getElementById('arModel');if(m)m.setAttribute('scale',`${scale} ${scale} ${scale}`);}
+  function resetScale(){scale=0.15;const m=document.getElementById('arModel');if(m)m.setAttribute('scale','0.15 0.15 0.15');}
+</script>
+<!-- A-Frame for MindAR -->
+<script src="https://aframe.io/releases/1.4.0/aframe.min.js"></script>
+</body>
+</html>
