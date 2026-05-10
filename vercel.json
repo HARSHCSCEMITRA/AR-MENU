@@ -11,7 +11,6 @@
     { "source": "/restaurant/settings", "destination": "/restaurant/settings.html" },
     { "source": "/restaurant/forgot", "destination": "/restaurant/forgot.html" },
     { "source": "/ar", "destination": "/ar/index.html" },
-    { "source": "/ar/demo", "destination": "/ar/demo.html" },
     { "source": "/admin", "destination": "/admin/index.html" },
     { "source": "/", "destination": "/public/index.html" }
   ]
