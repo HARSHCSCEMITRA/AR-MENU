@@ -109,7 +109,9 @@
       signInWithRedirect,
       getRedirectResult,
       GoogleAuthProvider,
-      sendPasswordResetEmail
+      sendPasswordResetEmail,
+      setPersistence,
+      browserLocalPersistence
     } from "https://www.gstatic.com/firebasejs/12.13.0/firebase-auth.js";
     import {
       getFirestore,
@@ -121,7 +123,7 @@
 
     const firebaseConfig = {
       apiKey: "AIzaSyD8_c3y8cUP3w1uG7CL3GGn_GqraWxbdWs",
-      authDomain: "ar-menu-39559.firebaseapp.com",
+      authDomain: "aaremenu.vercel.app",
       projectId: "ar-menu-39559",
       storageBucket: "ar-menu-39559.firebasestorage.app",
       messagingSenderId: "919934973947",
@@ -130,6 +132,7 @@
 
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
+    await setPersistence(auth, browserLocalPersistence);
     const db = getFirestore(app);
     const googleProvider = new GoogleAuthProvider();
 
