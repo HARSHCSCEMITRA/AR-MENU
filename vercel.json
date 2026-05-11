@@ -1,16 +1,18 @@
 {
-  "cleanUrls": true,
-  "trailingSlash": false,
-  "headers": [
-    {
-      "source": "/(.*)",
-      "headers": [
-        { "key": "Cross-Origin-Opener-Policy", "value": "same-origin-allow-popups" },
-        { "key": "Cross-Origin-Embedder-Policy", "value": "unsafe-none" }
-      ]
-    }
-  ],
   "rewrites": [
+    { "source": "/restaurant/login", "destination": "/restaurant/login.html" },
+    { "source": "/restaurant/signup", "destination": "/restaurant/signup.html" },
+    { "source": "/restaurant/dashboard", "destination": "/restaurant/dashboard.html" },
+    { "source": "/restaurant/dishes", "destination": "/restaurant/dishes.html" },
+    { "source": "/restaurant/qr-codes", "destination": "/restaurant/qr-codes.html" },
+    { "source": "/restaurant/3d-models", "destination": "/restaurant/3d-models.html" },
+    { "source": "/restaurant/analytics", "destination": "/restaurant/analytics.html" },
+    { "source": "/restaurant/subscription", "destination": "/restaurant/subscription.html" },
+    { "source": "/restaurant/settings", "destination": "/restaurant/settings.html" },
+    { "source": "/restaurant/forgot", "destination": "/restaurant/forgot.html" },
+    { "source": "/ar/(.*)", "destination": "/ar/index.html" },
+    { "source": "/ar", "destination": "/ar/index.html" },
+    { "source": "/admin", "destination": "/admin/index.html" },
     { "source": "/", "destination": "/public/index.html" }
   ]
 }

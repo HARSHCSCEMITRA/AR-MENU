@@ -49,19 +49,19 @@
   <div class="sidebar">
     <div class="sb-logo"><span style="font-size:22px;">🍽️</span><div class="sb-logo-text">ARMenu</div></div>
     <nav style="padding:14px 0;">
-      <a class="nav-item" href="dashboard">🏠 Dashboard</a>
-      <a class="nav-item" href="dishes">🍽️ My Dishes</a>
-      <a class="nav-item" href="qr-codes">🔲 QR Codes</a>
-      <a class="nav-item active" href="3d-models">🎲 3D Models</a>
-      <a class="nav-item" href="analytics">📊 Analytics</a>
-      <a class="nav-item" href="subscription">💳 Subscription</a>
-      <a class="nav-item" href="settings">⚙️ Settings</a>
+      <a class="nav-item" href="dashboard.html">🏠 Dashboard</a>
+      <a class="nav-item" href="dishes.html">🍽️ My Dishes</a>
+      <a class="nav-item" href="qr-codes.html">🔲 QR Codes</a>
+      <a class="nav-item active" href="3d-models.html">🎲 3D Models</a>
+      <a class="nav-item" href="analytics.html">📊 Analytics</a>
+      <a class="nav-item" href="subscription.html">💳 Subscription</a>
+      <a class="nav-item" href="settings.html">⚙️ Settings</a>
     </nav>
   </div>
   <div class="main">
     <div class="topbar">
       <div class="topbar-title">🎲 3D Models</div>
-      <a class="logout-btn" href="login">Logout</a>
+      <a class="logout-btn" href="login.html">Logout</a>
     </div>
     <div class="content">
       <div class="ai-tools-banner">
@@ -84,10 +84,10 @@
   const db=getFirestore(initializeApp(firebaseConfig));
   const emojis={'Starter':'🥗','Main Course':'🍛','Dessert':'🍨','Beverage':'🥤','Other':'🍽️'};
   onAuthStateChanged(auth,async user=>{
-    if(!user){window.location.href='login';return;}
+    if(!user){window.location.href='login.html';return;}
     const snap=await getDocs(query(collection(db,'dishes'),where('restaurantId','==',user.uid)));
     const dishes=snap.docs.map(d=>({id:d.id,...d.data()}));
-    if(!dishes.length){document.getElementById('modelsGrid').innerHTML='<div style="grid-column:1/-1;text-align:center;padding:40px;color:var(--text-muted);">No dishes yet. <a href="dishes" style="color:var(--primary);">Add dishes first →</a></div>';return;}
+    if(!dishes.length){document.getElementById('modelsGrid').innerHTML='<div style="grid-column:1/-1;text-align:center;padding:40px;color:var(--text-muted);">No dishes yet. <a href="dishes.html" style="color:var(--primary);">Add dishes first →</a></div>';return;}
     document.getElementById('modelsGrid').innerHTML=dishes.map(d=>`
       <div class="model-card">
         <div class="model-preview">${emojis[d.category]||'🍽️'}<span class="model-tag ${d.has3D?'tag-3d':'tag-no'}">${d.has3D?'🎲 3D':'⚠️ No 3D'}</span></div>
